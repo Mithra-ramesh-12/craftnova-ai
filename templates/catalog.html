@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="module-heading">
+
+    <h1>{{ t("Smart Catalog") }}</h1>
+
+    <p>Generate professional product catalogs using AI.</p>
+
+</div>
+
+
+<div class="table-box">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>{{ t("Product Name") }}</th>
+<th>{{ t("Category") }}</th>
+<th>{{ t("Material") }}</th>
+<th>{{ t("Price") }}</th>
+<th>{{ t("Actions") }}</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+{% for product in products %}
+
+<tr>
+
+<td>
+<strong>{{ product[2] }}</strong>
+</td>
+
+<td>{{ product[3] }}</td>
+
+<td>{{ product[4] }}</td>
+
+<td>₹{{ product[8] }}</td>
+
+<td>
+
+<a
+href="{{ url_for('generate_catalog_route', product_id=product[0]) }}"
+class="primary-btn">
+
+{{ t("Generate Catalog") }}
+
+</a>
+
+</td>
+
+</tr>
+
+{% else %}
+
+<tr>
+
+<td colspan="5"
+style="text-align:center;padding:40px;color:#999;">
+
+{{ t("No products available") }}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

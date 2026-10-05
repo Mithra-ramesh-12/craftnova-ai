@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="module-heading">
+
+    <h1>{{ t("Market") }}</h1>
+
+    <p>{{ t("Market Linkage") }}</p>
+
+</div>
+
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            ◇
+        </div>
+
+        <div class="stat-info">
+
+            <span>{{ t("Product Showcase") }}</span>
+
+            <strong>{{ products|length }}</strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            ◎
+        </div>
+
+        <div class="stat-info">
+
+            <span>{{ t("Buyer Visibility") }}</span>
+
+            <strong>Active</strong>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="module-card">
+
+    <h2>{{ t("Market Linkage") }}</h2>
+
+    <p>
+        {{ t("Connect your products with potential buyers") }}
+    </p>
+
+
+    <div class="tool-grid">
+
+        {% for product in products %}
+
+        <div class="tool-card">
+
+            <div class="tool-icon">
+                ◇
+            </div>
+
+            <div>
+
+                <strong>
+                    {{ product[2] }}
+                </strong>
+
+                <span>
+                    {{ product[3] }}
+                </span>
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <p>
+            {{ t("No products available") }}
+        </p>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

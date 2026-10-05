@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="module-heading">
+
+    <h1>{{ t("Voice Input") }}</h1>
+
+    <p>{{ t("Voice Product Entry") }}</p>
+
+</div>
+
+
+<div class="module-card">
+
+    <h2>{{ t("Voice Product Entry") }}</h2>
+
+    <p>{{ t("Speak your product details") }}</p>
+
+
+    <textarea
+        id="voiceText"
+        style="width:100%;min-height:150px;border:1px solid #ddd;border-radius:9px;padding:14px;"
+        placeholder="{{ t('Speak your product details') }}"></textarea>
+
+
+    <div class="button-row">
+
+        <button
+            class="primary-btn"
+            onclick="startVoice()">
+
+            ◉ {{ t("Start Voice Input") }}
+
+        </button>
+
+        <button
+            class="secondary-btn"
+            onclick="stopVoice()">
+
+            ■ {{ t("Stop Voice Input") }}
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<div class="module-card">
+
+    <h2>{{ t("Transcript") }}</h2>
+
+    <div id="result"
+         class="result-box">
+
+        {{ t("Voice Product Entry") }}
+
+    </div>
+
+</div>
+
+
+<script>
+
+let recognition;
+
+function startVoice() {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+
+        alert("Voice input is not supported by this browser.");
+
+        return;
+    }
+
+    recognition = new SpeechRecognition();
+
+    recognition.continuous = true;
+
+    recognition.interimResults = false;
+
+    recognition.lang = "en-IN";
+
+
+    recognition.onresult = function(event) {
+
+        let text = "";
+
+        for (
+            let i = event.resultIndex;
+            i < event.results.length;
+            i++
+        ) {
+
+            text +=
+                event.results[i][0].transcript + " ";
+
+        }
+
+        document.getElementById("voiceText").value += text;
+
+    };
+
+
+    recognition.start();
+
+}
+
+
+function stopVoice() {
+
+    if (recognition) {
+
+        recognition.stop();
+
+    }
+
+}
+
+</script>
+
+{% endblock %}

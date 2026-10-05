@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="module-heading">
+
+    <h1>{{ t("Inventory") }}</h1>
+
+    <p>{{ t("Inventory Management") }}</p>
+
+</div>
+
+
+<div class="module-card">
+
+    <form method="GET">
+
+        <div style="display:flex; gap:10px;">
+
+            <input
+                type="text"
+                name="search"
+                value="{{ search }}"
+                placeholder="{{ t('Search products') }}"
+                style="flex:1; padding:12px; border:1px solid #ddd; border-radius:9px;">
+
+            <button class="primary-btn"
+                    type="submit">
+
+                {{ t("Search") }}
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<div class="table-box">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>{{ t("Product Name") }}</th>
+<th>{{ t("Category") }}</th>
+<th>{{ t("Material") }}</th>
+<th>{{ t("Color") }}</th>
+<th>{{ t("Price") }}</th>
+<th>{{ t("Actions") }}</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for product in products %}
+
+<tr>
+
+<td><strong>{{ product[2] }}</strong></td>
+
+<td>{{ product[3] }}</td>
+
+<td>{{ product[4] }}</td>
+
+<td>{{ product[5] }}</td>
+
+<td>₹{{ product[8] }}</td>
+
+<td>
+
+<a href="{{ url_for('delete_product_route', product_id=product[0]) }}"
+   class="delete-btn">
+
+{{ t("Delete") }}
+
+</a>
+
+</td>
+
+</tr>
+
+{% else %}
+
+<tr>
+
+<td colspan="6"
+    style="text-align:center;padding:40px;color:#999;">
+
+{{ t("No products available") }}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

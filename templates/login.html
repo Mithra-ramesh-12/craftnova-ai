@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | CRAFTNOVA AI</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            background: #f5f5f3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #171717;
+        }
+
+        .page {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            min-height: 610px;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.10);
+            border: 1px solid #e8e8e5;
+        }
+
+        /* LEFT SIDE */
+
+        .brand-panel {
+            background: #171717;
+            color: white;
+            padding: 55px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-panel::before {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            top: -120px;
+            right: -100px;
+        }
+
+        .brand-panel::after {
+            content: "";
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.04);
+            bottom: -90px;
+            left: -70px;
+        }
+
+        .brand {
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+            background: white;
+            color: #171717;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 24px;
+        }
+
+        .brand h1 {
+            font-size: 38px;
+            letter-spacing: -1.5px;
+            margin-bottom: 12px;
+        }
+
+        .brand p {
+            color: #bcbcbc;
+            font-size: 15px;
+            line-height: 1.7;
+            max-width: 350px;
+        }
+
+        .features {
+            position: relative;
+            z-index: 2;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 20px;
+            color: #d7d7d7;
+            font-size: 14px;
+        }
+
+        .feature-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.09);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+        }
+
+        .copyright {
+            position: relative;
+            z-index: 2;
+            color: #777;
+            font-size: 12px;
+        }
+
+        /* RIGHT SIDE */
+
+        .form-panel {
+            padding: 55px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-form {
+            width: 100%;
+            max-width: 390px;
+        }
+
+        .form-header {
+            margin-bottom: 35px;
+        }
+
+        .form-header h2 {
+            font-size: 30px;
+            letter-spacing: -0.8px;
+            margin-bottom: 9px;
+        }
+
+        .form-header p {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 16px;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 50px;
+            border: 1px solid #dededb;
+            border-radius: 11px;
+            padding: 0 45px;
+            font-size: 14px;
+            outline: none;
+            background: #fafafa;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #171717;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(23, 23, 23, 0.07);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: #888;
+            font-size: 15px;
+        }
+
+        .login-button {
+            width: 100%;
+            height: 52px;
+            border: none;
+            border-radius: 11px;
+            background: #171717;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+
+        .login-button:hover {
+            background: #303030;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 27px 0;
+            color: #aaa;
+            font-size: 12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #e5e5e5;
+        }
+
+        .register-text {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .register-text a {
+            color: #171717;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .register-text a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #fff1f1;
+            border: 1px solid #ffd4d4;
+            color: #c62828;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .secure-text {
+            text-align: center;
+            color: #aaa;
+            font-size: 11px;
+            margin-top: 25px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 800px) {
+
+            .page {
+                padding: 15px;
+            }
+
+            .login-wrapper {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+            }
+
+            .brand-panel {
+                display: none;
+            }
+
+            .form-panel {
+                padding: 45px 30px;
+                min-height: 600px;
+            }
+        }
+
+        @media (max-width: 450px) {
+
+            .form-panel {
+                padding: 35px 22px;
+            }
+
+            .form-header h2 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="login-wrapper">
+
+        <!-- LEFT BRANDING PANEL -->
+
+        <div class="brand-panel">
+
+            <div class="brand">
+
+                <div class="brand-logo">
+                    C
+                </div>
+
+                <h1>CRAFTNOVA AI</h1>
+
+                <p>
+                    Empowering artisans with intelligent tools
+                    to create, manage and grow their handmade
+                    businesses.
+                </p>
+
+            </div>
+
+
+            <div class="features">
+
+                <div class="feature">
+                    <div class="feature-icon">✦</div>
+                    <span>AI-powered product cataloguing</span>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">◈</div>
+                    <span>Smart pricing assistance</span>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">◆</div>
+                    <span>Easy inventory management</span>
+                </div>
+
+            </div>
+
+
+            <div class="copyright">
+                © 2026 CRAFTNOVA AI
+            </div>
+
+        </div>
+
+
+        <!-- LOGIN FORM -->
+
+        <div class="form-panel">
+
+            <div class="login-form">
+
+                <div class="form-header">
+
+                    <h2>Welcome back</h2>
+
+                    <p>
+                        Sign in to continue to your CRAFTNOVA workspace.
+                    </p>
+
+                </div>
+
+
+                {% if error %}
+
+                <div class="error-message">
+                    {{ error }}
+                </div>
+
+                {% endif %}
+
+
+                <form method="POST">
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email address
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <span class="input-icon">✉</span>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter your email"
+                                required
+                                autocomplete="email"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <span class="input-icon">●</span>
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                required
+                                autocomplete="current-password"
+                            >
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                onclick="togglePassword()"
+                            >
+                                Show
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="login-button"
+                    >
+                        Sign In
+                    </button>
+
+                </form>
+
+
+                <div class="divider">
+                    OR
+                </div>
+
+
+                <div class="register-text">
+
+                    Don't have an account?
+                    <a href="{{ url_for('register') }}">
+                        Create an account
+                    </a>
+
+                </div>
+
+
+                <div class="secure-text">
+                    Your workspace is protected by secure authentication.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function togglePassword() {
+
+    const password = document.getElementById("password");
+    const button = document.querySelector(".password-toggle");
+
+    if (password.type === "password") {
+
+        password.type = "text";
+        button.textContent = "Hide";
+
+    } else {
+
+        password.type = "password";
+        button.textContent = "Show";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>

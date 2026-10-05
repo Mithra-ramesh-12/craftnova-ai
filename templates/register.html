@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>CRAFTNOVA AI - Register</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="auth-container">
+
+    <div class="auth-card">
+
+        <h1>CRAFTNOVA <span>AI</span></h1>
+
+        <h2>
+            {{ t("Create your CRAFTNOVA AI account") }}
+        </h2>
+
+
+        {% if error %}
+
+        <div class="error-message">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        <form method="POST">
+
+            <label>
+                {{ t("Name") }}
+            </label>
+
+            <input
+                type="text"
+                name="name"
+                required
+            >
+
+
+            <label>
+                {{ t("Email") }}
+            </label>
+
+            <input
+                type="email"
+                name="email"
+                required
+            >
+
+
+            <label>
+                {{ t("Password") }}
+            </label>
+
+            <input
+                type="password"
+                name="password"
+                required
+            >
+
+
+            <label>
+                {{ t("Language") }}
+            </label>
+
+            <select name="language">
+
+                <option value="English">
+                    English
+                </option>
+
+                <option value="Tamil">
+                    தமிழ்
+                </option>
+
+                <option value="Kannada">
+                    ಕನ್ನಡ
+                </option>
+
+                <option value="Telugu">
+                    తెలుగు
+                </option>
+
+                <option value="Hindi">
+                    हिन्दी
+                </option>
+
+                <option value="Malayalam">
+                    മലയാളം
+                </option>
+
+            </select>
+
+
+            <label>
+                {{ t("Craft Category") }}
+            </label>
+
+            <input
+                type="text"
+                name="craft_category"
+            >
+
+
+            <label>
+                {{ t("Business Name") }}
+            </label>
+
+            <input
+                type="text"
+                name="business_name"
+            >
+
+
+            <button
+                type="submit"
+                class="primary-btn"
+            >
+
+                {{ t("Create Account") }}
+
+            </button>
+
+        </form>
+
+
+        <p>
+
+            {{ t("Already have an account?") }}
+
+            <a href="/login">
+                {{ t("Login") }}
+            </a>
+
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+</html>

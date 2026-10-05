@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="welcome-card">
+
+    <div>
+
+        <div class="welcome-small">
+            Welcome
+        </div>
+
+        <h2>
+            {{ user[1] }} 👋
+        </h2>
+
+        <p>
+            Your AI-powered craft business assistant
+        </p>
+
+    </div>
+
+    <a href="{{ url_for('add_product_page') }}"
+       class="add-button">
+
+        + {{ t("Add Product") }}
+
+    </a>
+
+</div>
+
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            ▣
+        </div>
+
+        <div class="stat-info">
+
+            <span>{{ t("Products") }}</span>
+
+            <strong>{{ products|length }}</strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            ✦
+        </div>
+
+        <div class="stat-info">
+
+            <span>{{ t("AI Tools") }}</span>
+
+            <strong>4</strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            ◇
+        </div>
+
+        <div class="stat-info">
+
+            <span>{{ t("Market") }}</span>
+
+            <strong>{{ products|length }}</strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            A
+        </div>
+
+        <div class="stat-info">
+
+            <span>{{ t("Language") }}</span>
+
+            <strong>{{ current_language }}</strong>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="dashboard-grid">
+
+
+    <!-- AI TOOLS -->
+
+    <div class="dashboard-card">
+
+        <div class="card-heading">
+
+            <div>
+
+                <h2>
+                    {{ t("AI Tools") }}
+                </h2>
+
+                <p>
+                    Your AI-powered craft business assistant
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="tool-grid">
+
+
+            <a href="{{ url_for('image_enhancer') }}"
+               class="tool-card">
+
+                <div class="tool-icon">
+                    ◇
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ t("Image Enhancer") }}
+                    </strong>
+
+                    <span>
+                        {{ t("Enhance Product Image") }}
+                    </span>
+
+                </div>
+
+                <div class="tool-arrow">
+                    →
+                </div>
+
+            </a>
+
+
+            <a href="{{ url_for('voice_input') }}"
+               class="tool-card">
+
+                <div class="tool-icon">
+                    ◉
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ t("Voice Input") }}
+                    </strong>
+
+                    <span>
+                        {{ t("Voice Product Entry") }}
+                    </span>
+
+                </div>
+
+                <div class="tool-arrow">
+                    →
+                </div>
+
+            </a>
+
+
+            <a href="{{ url_for('catalog') }}"
+               class="tool-card">
+
+                <div class="tool-icon">
+                    ▤
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ t("Smart Catalog") }}
+                    </strong>
+
+                    <span>
+                        Generate a professional catalog
+                    </span>
+
+                </div>
+
+                <div class="tool-arrow">
+                    →
+                </div>
+
+            </a>
+
+
+            <a href="{{ url_for('pricing') }}"
+               class="tool-card">
+
+                <div class="tool-icon">
+                    ₹
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ t("AI Pricing") }}
+                    </strong>
+
+                    <span>
+                        AI-based price recommendation
+                    </span>
+
+                </div>
+
+                <div class="tool-arrow">
+                    →
+                </div>
+
+            </a>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- ACCOUNT -->
+
+    <div class="dashboard-card">
+
+        <div class="card-heading">
+
+            <div>
+
+                <h2>
+                    {{ t("Account") }}
+                </h2>
+
+                <p>
+                    {{ t("Account Settings") }}
+                </p>
+
+            </div>
+
+            <a href="{{ url_for('settings') }}">
+                <strong>
+                    {{ t("Settings") }}
+                </strong>
+            </a>
+
+        </div>
+
+
+        <div class="account-list">
+
+            <div class="account-row">
+                <span>{{ t("Name") }}</span>
+                <strong>{{ user[1] }}</strong>
+            </div>
+
+            <div class="account-row">
+                <span>{{ t("Email") }}</span>
+                <strong>{{ user[2] }}</strong>
+            </div>
+
+            <div class="account-row">
+                <span>{{ t("Language") }}</span>
+                <strong>{{ user[4] }}</strong>
+            </div>
+
+            <div class="account-row">
+                <span>{{ t("Craft Category") }}</span>
+                <strong>{{ user[5] }}</strong>
+            </div>
+
+            <div class="account-row">
+                <span>{{ t("Business Name") }}</span>
+                <strong>{{ user[6] }}</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+.account-list {
+    margin-top: 5px;
+}
+
+.account-row {
+    min-height: 53px;
+    border-bottom: 1px solid #eeeeee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.account-row span {
+    color: #999;
+    font-size: 12px;
+}
+
+.account-row strong {
+    font-size: 12px;
+    text-align: right;
+}
+
+</style>
+
+{% endblock %}

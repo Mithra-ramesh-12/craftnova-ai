@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="module-heading">
+
+    <h1>{{ t("Settings") }}</h1>
+
+    <p>{{ t("Account Settings") }}</p>
+
+</div>
+
+
+<div class="module-card">
+
+    <h2>{{ t("Account Settings") }}</h2>
+
+    <p>
+        Manage your CRAFTNOVA AI preferences.
+    </p>
+
+
+    {% if success %}
+
+    <div class="alert">
+
+        {{ t("Language updated successfully") }}
+
+    </div>
+
+    {% endif %}
+
+
+    <form method="POST">
+
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label>
+                    {{ t("Name") }}
+                </label>
+
+                <input
+                    type="text"
+                    value="{{ user[1] }}"
+                    readonly>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    {{ t("Email") }}
+                </label>
+
+                <input
+                    type="email"
+                    value="{{ user[2] }}"
+                    readonly>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    {{ t("Craft Category") }}
+                </label>
+
+                <input
+                    type="text"
+                    value="{{ user[5] }}"
+                    readonly>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    {{ t("Business Name") }}
+                </label>
+
+                <input
+                    type="text"
+                    value="{{ user[6] }}"
+                    readonly>
+
+            </div>
+
+
+            <div class="form-group full">
+
+                <label>
+                    {{ t("Select Language") }}
+                </label>
+
+                <select name="language">
+
+                    <option value="English"
+                        {% if user[4] == "English" %}selected{% endif %}>
+                        English
+                    </option>
+
+                    <option value="Tamil"
+                        {% if user[4] == "Tamil" %}selected{% endif %}>
+                        தமிழ்
+                    </option>
+
+                    <option value="Kannada"
+                        {% if user[4] == "Kannada" %}selected{% endif %}>
+                        ಕನ್ನಡ
+                    </option>
+
+                    <option value="Telugu"
+                        {% if user[4] == "Telugu" %}selected{% endif %}>
+                        తెలుగు
+                    </option>
+
+                    <option value="Hindi"
+                        {% if user[4] == "Hindi" %}selected{% endif %}>
+                        हिन्दी
+                    </option>
+
+                    <option value="Malayalam"
+                        {% if user[4] == "Malayalam" %}selected{% endif %}>
+                        മലയാളം
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <div class="button-row">
+
+            <button
+                type="submit"
+                class="primary-btn">
+
+                {{ t("Save Changes") }}
+
+            </button>
+
+        </div>
+
+
+    </form>
+
+</div>
+
+{% endblock %}

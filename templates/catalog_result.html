@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="module-heading">
+
+    <h1>{{ t("Catalog Result") }}</h1>
+
+    <p>{{ t("Smart Catalog") }}</p>
+
+</div>
+
+
+<div class="module-card">
+
+    <h2>{{ t("AI Generated Product Catalog") }}</h2>
+
+    <div class="result-box">
+
+{{ catalog_text }}
+
+    </div>
+
+</div>
+
+
+<div class="button-row">
+
+    <a href="{{ url_for('catalog') }}"
+       class="secondary-btn">
+
+        {{ t("Back") }}
+
+    </a>
+
+</div>
+
+{% endblock %}
