@@ -8,7 +8,7 @@ from rembg import remove, new_session
 
 # Load the background removal model once
 try:
-    REMBG_SESSION = new_session("u2net")
+    REMBG_SESSION = new_session("u2netp")
 except Exception:
     REMBG_SESSION = None
 
