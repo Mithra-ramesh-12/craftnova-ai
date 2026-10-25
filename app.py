@@ -82,12 +82,22 @@ from database.database import (
 # MODEL IMPORTS
 # ============================================================
 
+print("STARTUP CHECK: Loading language module...", flush=True)
 from models.language import translate
+
+print("STARTUP CHECK: Loading translator module...", flush=True)
 from models.translator import translate_text
+
+print("STARTUP CHECK: Loading image enhancer module...", flush=True)
 from models.image_enhancer import enhance_image
+
+print("STARTUP CHECK: Loading pricing assistant module...", flush=True)
 from models.pricing_assistant import suggest_price
+
+print("STARTUP CHECK: Loading voice input module...", flush=True)
 from models.voice_input import extract_product_details
 
+print("STARTUP CHECK: All model imports completed.", flush=True)
 
 # ============================================================
 # MODULE IMPORTS
