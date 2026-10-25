@@ -1,31 +1,3 @@
-import os
-
-from dotenv import load_dotenv
-
-load_dotenv()
-
-
-try:
-
-    from google import genai
-
-    api_key = os.getenv("GEMINI_API_KEY")
-
-    if api_key and api_key != "YOUR_GEMINI_API_KEY":
-
-        client = genai.Client(
-            api_key=api_key
-        )
-
-    else:
-
-        client = None
-
-except Exception:
-
-    client = None
-
-
 def suggest_price(
     product_type,
     material_cost,
@@ -33,127 +5,70 @@ def suggest_price(
     production_cost,
     market_info
 ):
-
     try:
-
         material_cost = float(material_cost)
-
-    except:
-
-        material_cost = 0
-
-
-    try:
-
         labour_cost = float(labour_cost)
-
-    except:
-
-        labour_cost = 0
-
-
-    try:
-
         production_cost = float(production_cost)
 
-    except:
+        if min(material_cost, labour_cost, production_cost) < 0:
+            return "Costs cannot be negative."
 
-        production_cost = 0
+        total_cost = (
+            material_cost
+            + labour_cost
+            + production_cost
+        )
 
+        if total_cost <= 0:
+            return "Please enter a cost greater than zero."
 
-    total_cost = (
-        material_cost
-        + labour_cost
-        + production_cost
-    )
+        minimum = round(total_cost * 1.20, 2)
+        recommended = round(total_cost * 1.35, 2)
+        maximum = round(total_cost * 1.50, 2)
 
+        market_info = (
+            market_info.strip()
+            if isinstance(market_info, str) and market_info.strip()
+            else "No market information provided."
+        )
 
-    minimum = round(total_cost * 1.20)
-
-    maximum = round(total_cost * 1.50)
-
-    recommended = round(total_cost * 1.35)
-
-
-    prompt = f"""
-
-You are an AI pricing assistant for handmade products.
+        return f"""
+AI PRICING RECOMMENDATION
 
 Product:
 {product_type}
 
-Material cost:
-₹{material_cost}
+Material Cost:
+₹{material_cost:.2f}
 
-Labour cost:
-₹{labour_cost}
+Labour Cost:
+₹{labour_cost:.2f}
 
-Production cost:
-₹{production_cost}
+Production Cost:
+₹{production_cost:.2f}
 
-Total cost:
-₹{total_cost}
+Total Production Cost:
+₹{total_cost:.2f}
 
-Market information:
+Recommended Price:
+₹{recommended:.2f}
+
+Price Range:
+₹{minimum:.2f} - ₹{maximum:.2f}
+
+Reason:
+The recommended price includes your material,
+labour, and production costs with a 35% markup.
+
+Market Consideration:
 {market_info}
 
-Give a simple pricing recommendation.
-
-Return:
-
-Recommended Price:
-Price Range:
-Reason:
-Market Consideration:
-
-Do not leave any section blank.
+Important:
+This is a cost-based estimate, not a verified
+market price. Compare similar handmade products
+before finalizing your selling price.
 """
 
-
-    if client:
-
-        try:
-
-            response = client.models.generate_content(
-
-                model="gemini-2.5-flash",
-
-                contents=prompt
-
-            )
-
-            result = response.text
-
-            if result and result.strip():
-
-                return result
-
-        except Exception:
-
-            pass
-
-
-    return f"""
-Recommended Price:
-
-₹{recommended}
-
-Price Range:
-
-₹{minimum} - ₹{maximum}
-
-Reason:
-
-The recommended price includes the material,
-labour and production costs with a reasonable
-margin for a handmade product.
-
-Market Consideration:
-
-Market information provided:
-{market_info if market_info else "No market information provided."}
-
-Total Basic Cost:
-
-₹{total_cost}
-"""
+    except (ValueError, TypeError) as error:
+        print("PRICING ERROR:", error)
+        return "Please enter valid numerical costs."

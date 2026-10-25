@@ -1,127 +1,566 @@
+```html
 {% extends "base.html" %}
 
 {% block content %}
-
-<div class="module-heading">
-
-    <h1>{{ t("Voice Input") }}</h1>
-
-    <p>{{ t("Voice Product Entry") }}</p>
-
-</div>
-
-
-<div class="module-card">
-
-    <h2>{{ t("Voice Product Entry") }}</h2>
-
-    <p>{{ t("Speak your product details") }}</p>
-
-
-    <textarea
-        id="voiceText"
-        style="width:100%;min-height:150px;border:1px solid #ddd;border-radius:9px;padding:14px;"
-        placeholder="{{ t('Speak your product details') }}"></textarea>
-
-
-    <div class="button-row">
-
-        <button
-            class="primary-btn"
-            onclick="startVoice()">
-
-            ◉ {{ t("Start Voice Input") }}
-
-        </button>
-
-        <button
-            class="secondary-btn"
-            onclick="stopVoice()">
-
-            ■ {{ t("Stop Voice Input") }}
-
-        </button>
-
-    </div>
-
-</div>
-
-
-<div class="module-card">
-
-    <h2>{{ t("Transcript") }}</h2>
-
-    <div id="result"
-         class="result-box">
-
-        {{ t("Voice Product Entry") }}
-
-    </div>
-
-</div>
-
-
-<script>
-
-let recognition;
-
-function startVoice() {
-
-    const SpeechRecognition =
-        window.SpeechRecognition ||
-        window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-
-        alert("Voice input is not supported by this browser.");
-
-        return;
+<style>
+    .voice-page {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
     }
 
-    recognition = new SpeechRecognition();
+    .voice-header {
+        margin-bottom: 24px;
+    }
 
-    recognition.continuous = true;
+    .voice-header h1 {
+        margin-bottom: 8px;
+    }
 
-    recognition.interimResults = false;
+    .voice-card {
+        background: var(--card-bg, #fff);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 22px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+    }
 
-    recognition.lang = "en-IN";
+    .voice-card h2 {
+        margin-top: 0;
+        font-size: 21px;
+    }
 
+    .voice-field {
+        margin-bottom: 18px;
+    }
 
-    recognition.onresult = function(event) {
+    .voice-field label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
 
-        let text = "";
+    .voice-field input,
+    .voice-field select,
+    .voice-field textarea {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 13px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        font-size: 15px;
+        font-family: inherit;
+        background: #fff;
+        color: #222;
+    }
 
-        for (
-            let i = event.resultIndex;
-            i < event.results.length;
-            i++
-        ) {
+    .voice-field textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
 
-            text +=
-                event.results[i][0].transcript + " ";
+    .voice-field input:focus,
+    .voice-field select:focus,
+    .voice-field textarea:focus {
+        outline: 2px solid #a7f3d0;
+        border-color: #059669;
+    }
 
+    .voice-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .voice-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        border-radius: 10px;
+        padding: 13px 18px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: opacity 0.2s ease;
+    }
+
+    .voice-btn:hover {
+        opacity: 0.88;
+    }
+
+    .voice-btn-primary {
+        background: #047857;
+        color: #fff;
+    }
+
+    .voice-btn-secondary {
+        background: #f3f4f6;
+        color: #1f2937;
+        border: 1px solid #d1d5db;
+    }
+
+    .voice-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .voice-status {
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: 9px;
+        background: #f0fdf4;
+        color: #166534;
+        display: none;
+    }
+
+    .voice-error {
+        padding: 13px 15px;
+        margin-bottom: 18px;
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+        border-radius: 10px;
+    }
+
+    .voice-help {
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .voice-processing {
+        display: none;
+        margin-top: 16px;
+        padding: 14px;
+        border-radius: 10px;
+        background: #eff6ff;
+        color: #1d4ed8;
+    }
+
+    @media (max-width: 600px) {
+        .voice-card {
+            padding: 18px;
         }
 
-        document.getElementById("voiceText").value += text;
+        .voice-buttons {
+            flex-direction: column;
+        }
 
+        .voice-btn {
+            width: 100%;
+            box-sizing: border-box;
+        }
+    }
+</style>
+
+<div class="voice-page">
+
+    <div class="voice-header">
+        <h1>🎙️ Voice-to-Catalog</h1>
+        <p class="voice-help">
+            Describe your handmade product in your preferred language.
+            Review the extracted details before generating your catalog.
+        </p>
+    </div>
+
+    {% if error %}
+        <div class="voice-error" role="alert">
+            <strong>Something went wrong:</strong>
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {% if not confirmed %}
+
+    <div class="voice-card">
+        <h2>🎤 Describe Your Product</h2>
+
+        <form method="POST"
+              action="{{ url_for('process_voice') }}"
+              id="voiceForm">
+
+            <div class="voice-field">
+                <label for="language">Choose Your Language</label>
+
+                <select name="language" id="language">
+                    <option value="English"
+                        {% if language == 'English' %}selected{% endif %}>
+                        English
+                    </option>
+
+                    <option value="Tamil"
+                        {% if language == 'Tamil' %}selected{% endif %}>
+                        தமிழ் (Tamil)
+                    </option>
+
+                    <option value="Kannada"
+                        {% if language == 'Kannada' %}selected{% endif %}>
+                        ಕನ್ನಡ (Kannada)
+                    </option>
+
+                    <option value="Telugu"
+                        {% if language == 'Telugu' %}selected{% endif %}>
+                        తెలుగు (Telugu)
+                    </option>
+
+                    <option value="Hindi"
+                        {% if language == 'Hindi' %}selected{% endif %}>
+                        हिन्दी (Hindi)
+                    </option>
+
+                    <option value="Malayalam"
+                        {% if language == 'Malayalam' %}selected{% endif %}>
+                        മലയാളം (Malayalam)
+                    </option>
+                </select>
+            </div>
+
+            <div class="voice-field">
+                <label for="voice_text">Your Product Description</label>
+
+                <textarea
+                    name="voice_text"
+                    id="voice_text"
+                    placeholder="Example: I make handmade cotton bags in red and blue. Each bag costs 500 rupees."
+                    required>{{ voice_text|default('') }}</textarea>
+
+                <p class="voice-help">
+                    You can speak using the microphone or type your description.
+                </p>
+            </div>
+
+            <div class="voice-buttons">
+                <button type="button"
+                        class="voice-btn voice-btn-secondary"
+                        id="startVoice">
+                    🎤 Start Speaking
+                </button>
+
+                <button type="button"
+                        class="voice-btn voice-btn-secondary"
+                        id="stopVoice"
+                        disabled>
+                    ⏹ Stop Speaking
+                </button>
+
+                <button type="button"
+                        class="voice-btn voice-btn-secondary"
+                        id="clearVoice">
+                    🔄 Re-enter Voice
+                </button>
+            </div>
+
+            <div class="voice-status"
+                 id="voiceStatus"
+                 role="status"
+                 aria-live="polite"></div>
+
+            <div class="voice-processing"
+                 id="processingBox"
+                 role="status">
+                Processing your description. Please wait...
+            </div>
+
+            <div class="voice-buttons">
+                <button type="submit"
+                        class="voice-btn voice-btn-primary"
+                        id="reviewButton">
+                    Continue to Product Details →
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    {% else %}
+
+    <div class="voice-card">
+        <h2>📝 Review Your Product Details</h2>
+
+        <p class="voice-help">
+            Check the information extracted from your description.
+            You can correct the details before generating your catalog.
+        </p>
+
+        <form method="POST" action="{{ url_for('confirm_voice') }}">
+
+            <div class="voice-field">
+                <label for="product_name">Product Name *</label>
+                <input
+                    type="text"
+                    id="product_name"
+                    name="product_name"
+                    value="{{ product_details.get('product_name', '') or '' }}"
+                    required>
+            </div>
+
+            <div class="voice-field">
+                <label for="category">Category</label>
+                <input
+                    type="text"
+                    id="category"
+                    name="category"
+                    value="{{ product_details.get('category', '') or '' }}">
+            </div>
+
+            <div class="voice-field">
+                <label for="material">Material</label>
+                <input
+                    type="text"
+                    id="material"
+                    name="material"
+                    value="{{ product_details.get('material', '') or '' }}">
+            </div>
+
+            <div class="voice-field">
+                <label for="color">Color</label>
+                <input
+                    type="text"
+                    id="color"
+                    name="color"
+                    value="{{ product_details.get('color', '') or '' }}">
+            </div>
+
+            <div class="voice-field">
+                <label for="size">Size</label>
+                <input
+                    type="text"
+                    id="size"
+                    name="size"
+                    value="{{ product_details.get('size', '') or '' }}">
+            </div>
+
+            <div class="voice-field">
+                <label for="description">Product Description</label>
+                <textarea
+                    id="description"
+                    name="description">{{ product_details.get('description', '') or '' }}</textarea>
+            </div>
+
+            <div class="voice-field">
+                <label for="price">Price (₹)</label>
+                <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    min="0"
+                    step="0.01"
+                    value="{{ product_details.get('price', '') or '' }}">
+            </div>
+
+            <div class="voice-buttons">
+                <button type="submit"
+                        class="voice-btn voice-btn-primary">
+                    ✅ Generate My Catalog
+                </button>
+
+                <a href="{{ url_for('rerecord_voice') }}"
+                   class="voice-btn voice-btn-secondary">
+                    🔄 Re-enter Voice
+                </a>
+            </div>
+
+        </form>
+    </div>
+
+    {% endif %}
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const voiceForm = document.getElementById("voiceForm");
+    const languageSelect = document.getElementById("language");
+    const voiceText = document.getElementById("voice_text");
+    const startButton = document.getElementById("startVoice");
+    const stopButton = document.getElementById("stopVoice");
+    const clearButton = document.getElementById("clearVoice");
+    const statusBox = document.getElementById("voiceStatus");
+    const processingBox = document.getElementById("processingBox");
+    const reviewButton = document.getElementById("reviewButton");
+
+    let recognition = null;
+
+    const languageCodes = {
+        English: "en-IN",
+        Tamil: "ta-IN",
+        Kannada: "kn-IN",
+        Telugu: "te-IN",
+        Hindi: "hi-IN",
+        Malayalam: "ml-IN"
     };
 
+    function showStatus(message) {
+        if (!statusBox) return;
 
-    recognition.start();
-
-}
-
-
-function stopVoice() {
-
-    if (recognition) {
-
-        recognition.stop();
-
+        statusBox.textContent = message;
+        statusBox.style.display = "block";
     }
 
-}
+    function hideStatus() {
+        if (!statusBox) return;
 
+        statusBox.textContent = "";
+        statusBox.style.display = "none";
+    }
+
+    if (startButton && voiceText && languageSelect) {
+        const SpeechRecognition =
+            window.SpeechRecognition ||
+            window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+            startButton.disabled = true;
+
+            showStatus(
+                "Voice recognition is not supported by this browser. " +
+                "Please use Google Chrome or type your description."
+            );
+        } else {
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+
+            recognition.onstart = function () {
+                startButton.disabled = true;
+                stopButton.disabled = false;
+
+                showStatus("Listening... Start speaking.");
+            };
+
+            recognition.onresult = function (event) {
+                let finalTranscript = "";
+                let interimTranscript = "";
+
+                for (
+                    let i = event.resultIndex;
+                    i < event.results.length;
+                    i++
+                ) {
+                    const transcript =
+                        event.results[i][0].transcript;
+
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript + " ";
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+
+                if (finalTranscript) {
+                    voiceText.value =
+                        (voiceText.value.trim() + " " + finalTranscript.trim())
+                        .trim();
+                }
+
+                if (interimTranscript) {
+                    showStatus("Hearing: " + interimTranscript);
+                } else {
+                    showStatus("Speech captured. You can continue speaking.");
+                }
+            };
+
+            recognition.onerror = function (event) {
+                let message = "Voice recognition failed.";
+
+                if (event.error === "not-allowed") {
+                    message =
+                        "Microphone access was denied. Allow microphone access in your browser settings.";
+                } else if (event.error === "no-speech") {
+                    message =
+                        "No speech detected. Please try speaking again.";
+                } else if (event.error === "network") {
+                    message =
+                        "A network error occurred during speech recognition.";
+                }
+
+                showStatus(message);
+            };
+
+            recognition.onend = function () {
+                startButton.disabled = false;
+                stopButton.disabled = true;
+            };
+
+            startButton.addEventListener("click", function () {
+                hideStatus();
+
+                recognition.lang =
+                    languageCodes[languageSelect.value] || "en-IN";
+
+                try {
+                    recognition.start();
+                } catch (error) {
+                    showStatus(
+                        "Voice recognition is already running. Please wait."
+                    );
+                }
+            });
+
+            stopButton.addEventListener("click", function () {
+                if (recognition) {
+                    recognition.stop();
+                    showStatus("Voice input stopped.");
+                }
+            });
+        }
+    }
+
+    if (clearButton && voiceText) {
+        clearButton.addEventListener("click", function () {
+            if (recognition) {
+                try {
+                    recognition.stop();
+                } catch (error) {
+                    // Recognition may already be stopped.
+                }
+            }
+
+            voiceText.value = "";
+            voiceText.focus();
+            hideStatus();
+        });
+    }
+
+    if (voiceForm) {
+        voiceForm.addEventListener("submit", function (event) {
+            if (!voiceText.value.trim()) {
+                event.preventDefault();
+
+                showStatus(
+                    "Please speak or type your product description first."
+                );
+
+                voiceText.focus();
+                return;
+            }
+
+            if (recognition) {
+                try {
+                    recognition.stop();
+                } catch (error) {
+                    // Recognition may already be stopped.
+                }
+            }
+
+            if (processingBox) {
+                processingBox.style.display = "block";
+            }
+
+            if (reviewButton) {
+                reviewButton.disabled = true;
+                reviewButton.textContent = "Processing...";
+            }
+        });
+    }
+});
 </script>
 
 {% endblock %}
+```

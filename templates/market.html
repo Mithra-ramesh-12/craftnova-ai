@@ -1,97 +1,27 @@
 {% extends "base.html" %}
-
 {% block content %}
-
-<div class="module-heading">
-
-    <h1>{{ t("Market") }}</h1>
-
-    <p>{{ t("Market Linkage") }}</p>
-
+<style>
+.cn-wrap{max-width:1100px;margin:0 auto;padding:24px}.cn-hero{padding:26px;border-radius:18px;background:linear-gradient(135deg,#dcfce7,#eff6ff);margin-bottom:22px}.cn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}.cn-card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:20px;box-shadow:0 4px 18px #1111}.cn-btn{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:9px;background:#166534;color:#fff;text-decoration:none;font-weight:700}.cn-muted{color:#6b7280}.cn-product{padding:12px 0;border-bottom:1px solid #e5e7eb}.cn-product:last-child{border-bottom:0}
+</style>
+<div class="cn-wrap">
+  <div class="cn-hero"><h1>Market Linkage</h1><p>Explore market destinations and prepare your handmade products for wider visibility.</p></div>
+  <h2>Marketplace and Seller Resources</h2>
+  <div class="cn-grid">
+    {% for item in market_links %}
+      <div class="cn-card"><h3>{{ item.name }}</h3><p>{{ item.description }}</p><a class="cn-btn" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">Visit official website ↗</a></div>
+    {% endfor %}
+  </div>
+  <h2 style="margin-top:30px">Your Products</h2>
+  <div class="cn-card">
+    {% if products %}
+      <p class="cn-muted">Your saved products are listed below. These links help you explore seller resources; products are not automatically uploaded to external marketplaces.</p>
+      {% for product in products %}
+        <div class="cn-product"><strong>{{ product[2] if product|length > 2 else 'Product' }}</strong>{% if product|length > 3 and product[3] %}<div class="cn-muted">Category: {{ product[3] }}</div>{% endif %}</div>
+      {% endfor %}
+    {% else %}
+      <p>You have not added any products yet. Add a product to start preparing your catalog for market linkage.</p>
+      <a class="cn-btn" href="{{ url_for('add_product_page') }}">Add a Product</a>
+    {% endif %}
+  </div>
 </div>
-
-
-<div class="stats-grid">
-
-    <div class="stat-card">
-
-        <div class="stat-icon">
-            ◇
-        </div>
-
-        <div class="stat-info">
-
-            <span>{{ t("Product Showcase") }}</span>
-
-            <strong>{{ products|length }}</strong>
-
-        </div>
-
-    </div>
-
-
-    <div class="stat-card">
-
-        <div class="stat-icon">
-            ◎
-        </div>
-
-        <div class="stat-info">
-
-            <span>{{ t("Buyer Visibility") }}</span>
-
-            <strong>Active</strong>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<div class="module-card">
-
-    <h2>{{ t("Market Linkage") }}</h2>
-
-    <p>
-        {{ t("Connect your products with potential buyers") }}
-    </p>
-
-
-    <div class="tool-grid">
-
-        {% for product in products %}
-
-        <div class="tool-card">
-
-            <div class="tool-icon">
-                ◇
-            </div>
-
-            <div>
-
-                <strong>
-                    {{ product[2] }}
-                </strong>
-
-                <span>
-                    {{ product[3] }}
-                </span>
-
-            </div>
-
-        </div>
-
-        {% else %}
-
-        <p>
-            {{ t("No products available") }}
-        </p>
-
-        {% endfor %}
-
-    </div>
-
-</div>
-
 {% endblock %}

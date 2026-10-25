@@ -1,119 +1,22 @@
 {% extends "base.html" %}
-
 {% block content %}
-
-<div class="module-heading">
-
-    <h1>{{ t("AI Pricing") }}</h1>
-
-    <p>{{ t("AI Pricing Assistant") }}</p>
-
-</div>
-
-
-<div class="module-card">
-
-    <h2>{{ t("Get Price Recommendation") }}</h2>
-
-    <p>
-        {{ t("Get an AI-based price recommendation") }}
-    </p>
-
-
-    <form method="POST">
-
-        <div class="form-grid">
-
-
-            <div class="form-group">
-
-                <label>{{ t("Product Type") }}</label>
-
-                <input
-                    type="text"
-                    name="product_type"
-                    required>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>{{ t("Material Cost") }}</label>
-
-                <input
-                    type="number"
-                    step="0.01"
-                    name="material_cost"
-                    required>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>{{ t("Labour Cost") }}</label>
-
-                <input
-                    type="number"
-                    step="0.01"
-                    name="labour_cost"
-                    required>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>{{ t("Production Cost") }}</label>
-
-                <input
-                    type="number"
-                    step="0.01"
-                    name="production_cost"
-                    required>
-
-            </div>
-
-
-            <div class="form-group full">
-
-                <label>{{ t("Market Information") }}</label>
-
-                <textarea name="market_info"></textarea>
-
-            </div>
-
-        </div>
-
-
-        <div class="button-row">
-
-            <button class="primary-btn">
-
-                ₹ {{ t("Get Price Recommendation") }}
-
-            </button>
-
-        </div>
-
+<style>
+.cn-wrap{max-width:1000px;margin:0 auto;padding:24px}.cn-hero{padding:26px;border-radius:18px;background:linear-gradient(135deg,#f3e8ff,#eff6ff);margin-bottom:22px}.cn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.cn-card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:20px;box-shadow:0 4px 18px #1111}.cn-card label{display:block;font-weight:600;margin:12px 0 6px}.cn-card input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #d1d5db;border-radius:9px}.cn-btn{margin-top:18px;border:0;border-radius:10px;padding:12px 18px;background:#6d28d9;color:white;font-weight:700;cursor:pointer}.cn-error{padding:12px;background:#fee2e2;color:#991b1b;border-radius:10px;margin-bottom:16px}.cn-result{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:18px;margin-top:18px}.cn-note{color:#6b7280;font-size:.92rem}
+</style>
+<div class="cn-wrap">
+  <div class="cn-hero"><h1>Smart AI Pricing</h1><p>Enter your product-making costs to calculate a suggested selling-price range.</p></div>
+  {% if error %}<div class="cn-error">{{ error }}</div>{% endif %}
+  <div class="cn-card">
+    <form method="POST" action="{{ url_for('pricing') }}">
+      <div class="cn-grid">
+        <div><label for="material_cost">Material cost (₹)</label><input id="material_cost" name="material_cost" type="number" min="0" step="0.01" value="{{ request.form.get('material_cost','') }}" required></div>
+        <div><label for="labour_cost">Labour cost (₹)</label><input id="labour_cost" name="labour_cost" type="number" min="0" step="0.01" value="{{ request.form.get('labour_cost','') }}" required></div>
+        <div><label for="production_cost">Other production cost (₹)</label><input id="production_cost" name="production_cost" type="number" min="0" step="0.01" value="{{ request.form.get('production_cost','') }}" required></div>
+      </div>
+      <button class="cn-btn" type="submit">Calculate Suggested Price</button>
     </form>
-
+  </div>
+  {% if result is not none %}<div class="cn-result"><h2>Suggested Pricing Result</h2><div>{{ result }}</div></div>{% endif %}
+  <p class="cn-note">This is an estimate based on the costs entered, not a guaranteed market price. Consider product quality, demand, and competitor prices before setting the final price.</p>
 </div>
-
-
-{% if result %}
-
-<div class="module-card">
-
-    <h2>{{ t("Recommended Price") }}</h2>
-
-    <div class="result-box">
-        {{ result }}
-    </div>
-
-</div>
-
-{% endif %}
-
 {% endblock %}

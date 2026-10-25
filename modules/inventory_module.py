@@ -2,29 +2,27 @@ from database.database import get_products, delete_product
 
 
 def search_inventory(user_id, search=""):
+    """
+    Return all products belonging to the user
+    or filter products using a search term.
+    """
 
     products = get_products(user_id)
 
-    if not search:
-
+    if not search or not search.strip():
         return products
 
+    search = search.strip().casefold()
 
-    search = search.lower().strip()
-
-    result = []
-
+    matching_products = []
 
     for product in products:
 
-        product_name = str(product[2] or "").lower()
-
-        category = str(product[3] or "").lower()
-
-        material = str(product[4] or "").lower()
-
-        color = str(product[5] or "").lower()
-
+        # Product tuple indexes from the existing project.
+        product_name = str(product[2] or "").casefold()
+        category = str(product[3] or "").casefold()
+        material = str(product[4] or "").casefold()
+        color = str(product[5] or "").casefold()
 
         if (
             search in product_name
@@ -32,16 +30,6 @@ def search_inventory(user_id, search=""):
             or search in material
             or search in color
         ):
+            matching_products.append(product)
 
-            result.append(product)
-
-
-    return result
-
-
-def delete_inventory_product(product_id, user_id):
-
-    delete_product(
-        product_id,
-        user_id
-    )
+    return matching_products
