@@ -1,14 +1,6 @@
-import os
 import io
 import threading
 
-import numpy as np
-from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw
-from rembg import remove, new_session
-
-
-# Load the background-removal model only when needed.
-# This prevents Render from downloading the model at startup.
 REMBG_SESSION = None
 REMBG_LOCK = threading.Lock()
 
@@ -19,13 +11,20 @@ def get_rembg_session():
     if REMBG_SESSION is None:
         with REMBG_LOCK:
             if REMBG_SESSION is None:
+                print("Loading background-removal model...", flush=True)
+
+                from rembg import new_session
+
                 REMBG_SESSION = new_session("u2netp")
+
+                print("Background-removal model loaded.", flush=True)
 
     return REMBG_SESSION
 
 
 def remove_background(input_path):
-    """Remove the original background and return a transparent RGBA image."""
+    from PIL import Image
+    from rembg import remove
 
     with open(input_path, "rb") as image_file:
         input_data = image_file.read()
@@ -34,11 +33,15 @@ def remove_background(input_path):
     output_data = remove(input_data, session=session)
 
     image = Image.open(io.BytesIO(output_data)).convert("RGBA")
+
     return image
 
 
 def crop_product(image):
-    """Crop empty transparent space around the product."""
+    from PIL import Image
+
+    if image.mode != "RGBA":
+        image = image.convert("RGBA")
 
     alpha = image.getchannel("A")
     bbox = alpha.getbbox()
@@ -49,181 +52,112 @@ def crop_product(image):
     return image
 
 
-def create_background(size, style="auto"):
-    """Create a professional product-photography background."""
+def create_background(size, color=(255, 255, 255, 255)):
+    from PIL import Image
 
-    width, height = size
-
-    backgrounds = {
-        "white": (248, 248, 246),
-        "warm": (238, 229, 214),
-        "earthy": (226, 216, 199),
-        "luxury": (232, 232, 228),
-        "auto": (242, 239, 233),
-    }
-
-    base = np.array(
-        backgrounds.get(style, backgrounds["auto"]),
-        dtype=np.float32,
-    )
-
-    pixels = np.zeros((height, width, 3), dtype=np.uint8)
-
-    for y in range(height):
-        factor = 1.0 - (y / height) * 0.06
-        pixels[y, :, :] = np.clip(base * factor, 0, 255).astype(
-            np.uint8
-        )
-
-    return Image.fromarray(pixels)
+    return Image.new("RGBA", size, color)
 
 
-def add_soft_shadow(background, product, position):
-    """Add a subtle contact shadow beneath the product."""
+def add_soft_shadow(image):
+    from PIL import Image, ImageFilter
 
-    shadow_layer = Image.new(
-        "RGBA",
-        background.size,
-        (0, 0, 0, 0),
-    )
+    image = image.convert("RGBA")
 
-    product_width = product.width
-    product_height = product.height
+    alpha = image.getchannel("A")
+    shadow_alpha = alpha.filter(ImageFilter.GaussianBlur(18))
 
-    shadow_width = max(1, int(product_width * 0.65))
-    shadow_height = max(25, int(product_height * 0.035))
+    shadow = Image.new("RGBA", image.size, (0, 0, 0, 0))
+    shadow.putalpha(shadow_alpha)
 
-    shadow = Image.new(
-        "RGBA",
-        (shadow_width, shadow_height),
-        (0, 0, 0, 0),
-    )
-
-    shadow_mask = Image.new(
-        "L",
-        (shadow_width, shadow_height),
-        0,
-    )
-
-    draw = ImageDraw.Draw(shadow_mask)
-
-    draw.ellipse(
-        (0, 0, shadow_width - 1, shadow_height - 1),
-        fill=95,
-    )
-
-    shadow_mask = shadow_mask.filter(
-        ImageFilter.GaussianBlur(12)
-    )
-
-    shadow.putalpha(shadow_mask)
-
-    x = position[0] + (product_width - shadow_width) // 2
-    y = min(
-        background.height - shadow_height,
-        position[1] + product_height - 15,
-    )
-    y = max(0, y)
-
-    shadow_layer.alpha_composite(shadow, (x, y))
-
-    return Image.alpha_composite(
-        background.convert("RGBA"),
-        shadow_layer,
-    )
+    return shadow
 
 
 def improve_product_image(image):
-    """Improve lighting, contrast, colour, and sharpness."""
+    from PIL import Image, ImageEnhance, ImageOps
 
     image = ImageOps.exif_transpose(image)
-
-    image = ImageEnhance.Brightness(image).enhance(1.04)
-    image = ImageEnhance.Contrast(image).enhance(1.08)
-    image = ImageEnhance.Color(image).enhance(1.04)
-    image = ImageEnhance.Sharpness(image).enhance(1.20)
+    image = ImageEnhance.Color(image).enhance(1.08)
+    image = ImageEnhance.Contrast(image).enhance(1.04)
+    image = ImageEnhance.Sharpness(image).enhance(1.10)
 
     return image
 
 
-def enhance_image(
-    input_path,
-    output_path,
-    background_style="auto",
-):
-    """Create a polished product image on a studio background."""
+def enhance_image(input_path, output_path=None, preset="professional"):
+    """
+    Enhance an artisan product image.
 
-    if not os.path.exists(input_path):
-        raise Exception("Input image was not found.")
+    Heavy image-processing libraries and the background-removal
+    model are loaded only when this function is called.
+    """
 
-    try:
-        # STEP 1: Remove the original background.
-        product = remove_background(input_path)
+    from PIL import Image, ImageEnhance
 
-        # STEP 2: Crop empty transparent space.
-        product = crop_product(product)
+    print("Starting product image enhancement...", flush=True)
 
-        # STEP 3: Improve the product image.
-        product = improve_product_image(product)
+    original = Image.open(input_path).convert("RGBA")
+    original.thumbnail((1600, 1600), Image.Resampling.LANCZOS)
 
-        # STEP 4: Create the studio background.
-        canvas_size = (1600, 1600)
+    # Remove the background only when image enhancement is requested.
+    product = remove_background(input_path)
+    product.thumbnail((1250, 1250), Image.Resampling.LANCZOS)
 
-        background = create_background(
-            canvas_size,
-            background_style,
-        ).convert("RGBA")
+    product = crop_product(product)
+    product = improve_product_image(product)
 
-        # STEP 5: Resize the product.
-        product.thumbnail(
-            (1250, 1250),
-            Image.Resampling.LANCZOS,
-        )
+    width, height = 1600, 1600
 
-        # STEP 6: Centre the product.
-        x = (canvas_size[0] - product.width) // 2
-        y = (canvas_size[1] - product.height) // 2 - 30
+    backgrounds = {
+        "clean_white": (255, 255, 255, 255),
+        "warm_artisan": (248, 240, 225, 255),
+        "natural_earthy": (237, 230, 214, 255),
+        "premium_neutral": (242, 240, 235, 255),
+        "professional": (255, 255, 255, 255),
+        "auto": (255, 255, 255, 255),
+    }
 
-        # Keep the product inside the canvas.
-        y = max(0, min(y, canvas_size[1] - product.height))
+    background_color = backgrounds.get(
+        preset,
+        (255, 255, 255, 255)
+    )
 
-        position = (x, y)
+    background = create_background(
+        (width, height),
+        background_color
+    )
 
-        # STEP 7: Add the soft shadow.
-        background = add_soft_shadow(
-            background,
-            product,
-            position,
-        )
+    product.thumbnail((1250, 1250), Image.Resampling.LANCZOS)
 
-        # STEP 8: Place the product.
-        background.alpha_composite(product, position)
+    x = (width - product.width) // 2
+    y = (height - product.height) // 2
 
-        # STEP 9: Final image processing.
-        final_image = background.convert("RGB")
+    background.alpha_composite(product, (x, y))
 
-        final_image = final_image.filter(
-            ImageFilter.UnsharpMask(
-                radius=1,
-                percent=110,
-                threshold=3,
-            )
-        )
+    background = background.convert("RGB")
+    background = ImageEnhance.Contrast(background).enhance(1.03)
 
-        # STEP 10: Save the final image.
-        output_directory = os.path.dirname(output_path)
-
-        if output_directory:
-            os.makedirs(output_directory, exist_ok=True)
-
-        final_image.save(
+    if output_path:
+        background.save(
             output_path,
             "JPEG",
             quality=95,
-            optimize=True,
+            optimize=True
         )
 
+        print("Enhanced image saved.", flush=True)
         return output_path
 
-    except Exception as e:
-        raise Exception(f"Image enhancement failed: {str(e)}")
+    output_buffer = io.BytesIO()
+
+    background.save(
+        output_buffer,
+        format="JPEG",
+        quality=95,
+        optimize=True
+    )
+
+    output_buffer.seek(0)
+
+    print("Image enhancement completed.", flush=True)
+
+    return output_buffer
