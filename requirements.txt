@@ -7,5 +7,4 @@ Pillow
 rembg
 onnxruntime
 google-genai
-google-generativeai
 requests
