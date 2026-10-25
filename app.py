@@ -89,7 +89,12 @@ print("STARTUP CHECK: Loading translator module...", flush=True)
 from models.translator import translate_text
 
 print("STARTUP CHECK: Loading image enhancer module...", flush=True)
+print("STARTUP CHECK: Before image enhancer import...", flush=True)
+
 from models.image_enhancer import enhance_image
+
+print("STARTUP CHECK: Image enhancer import completed!", flush=True)
+
 
 print("STARTUP CHECK: Loading pricing assistant module...", flush=True)
 from models.pricing_assistant import suggest_price
